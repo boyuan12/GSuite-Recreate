@@ -1,0 +1,34 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}
+    Create your own Doogle Account
+{% endblock %}
+
+{% block main %}
+    <h1>Register an account</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            <span class="input-group-text">First and last name</span>
+            <input type="text" aria-label="First name" class="form-control">
+            <input type="text" aria-label="Last name" class="form-control">
+        </div>
+        <div class="row g-3 align-items-center mb-3">
+            <div class="col-auto">
+              <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" placeholder="Password">
+            </div>
+            <div class="col-auto">
+              <span id="passwordHelpInline" class="form-text">
+                Must be 8-20 characters long.
+              </span>
+            </div>
+            <div class="col-auto">
+                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" placeholder="Confirmation">
+              </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+            <span class="input-group-text" id="basic-addon2">@mail.devwithme.xyz</span>
+          </div>
+    </form>
+{% endblock %}
