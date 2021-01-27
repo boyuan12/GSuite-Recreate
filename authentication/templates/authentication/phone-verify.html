@@ -1,0 +1,18 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}
+    Phone
+{% endblock %}
+
+{% block main %}
+    <h1>Phone Verification</h1>
+    <p>We sent a 6-digit code to the phone number you provided, please enter below: </p>
+    <form method="POST" action="/auth/phone-verify/">
+        {% csrf_token %}
+        <div>
+            <input type="text" name="code" class="form-control">
+        </div>
+        <button type="submit">Verify</button>
+    </form>
+
+{% endblock %}

@@ -5,17 +5,23 @@
 {% endblock %}
 
 {% block main %}
+    {% if message %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <span>{{ message }}</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
     <h1>Register an account</h1>
     <form method="POST">
         {% csrf_token %}
         <div class="input-group mb-3">
             <span class="input-group-text">First and last name</span>
-            <input type="text" aria-label="First name" class="form-control">
-            <input type="text" aria-label="Last name" class="form-control">
+            <input type="text" aria-label="First name" class="form-control" name="first_name">
+            <input type="text" aria-label="Last name" class="form-control" name="last_name">
         </div>
         <div class="row g-3 align-items-center mb-3">
             <div class="col-auto">
-              <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" placeholder="Password">
+              <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" placeholder="Password" name="password">
             </div>
             <div class="col-auto">
               <span id="passwordHelpInline" class="form-text">
@@ -23,12 +29,13 @@
               </span>
             </div>
             <div class="col-auto">
-                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" placeholder="Confirmation">
+                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" placeholder="Confirmation" name="confirmation">
               </div>
           </div>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+            <input type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2" name="username">
             <span class="input-group-text" id="basic-addon2">@mail.devwithme.xyz</span>
           </div>
+          <button type="submit" class="btn btn-primary">Register</button>
     </form>
 {% endblock %}
