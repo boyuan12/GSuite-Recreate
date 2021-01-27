@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from helpers import validate_password, random_str
 import os
 from twilio.rest import Client
+from .models import Profile
 
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
@@ -49,7 +50,7 @@ def register(request):
         request.session["first_name"] = first_name
         request.session["last_name"] = last_name
 
-        return redirect("/register/phone/")
+        return redirect("/auth/register/phone/")
 
     return render(request, "authentication/register.html")
 
@@ -61,9 +62,11 @@ def step_two_phone(request):
         phone = request.POST["phone-number"]
         code = random_str()
 
+        print(code)
 
         c.messages.create(from_='+19162800623', body='TWOFA Code: ' + code, to='+' + country_code + phone)
         request.session["code"] = code
+        request.session["phone"] = '+' + country_code + phone
 
         return render(request, "authentication/phone-verify.html")
 
@@ -73,8 +76,18 @@ def step_two_phone(request):
 
 def phone_verify(request):
     if request.method == "POST":
-        return HttpResponse(request.POST["code"])
+        if request.session.get("code") != request.POST["code"]:
+            return render(request, "authentication/phone.html", {
+                "message": "Invalid code"
+            })
 
+        User.objects.create_user(username=request.session.get("username"), password=request.session.get("password"), first_name=request.session.get("first_name"), last_name=request.session.get("last_name"))
+
+        user = User.objects.get(username=request.session.get("username"))
+
+        Profile(user=user, phone=request.session.get("phone")).save()
+
+        return HttpResponse("Welcome!")
 
 
 def login_view(request):

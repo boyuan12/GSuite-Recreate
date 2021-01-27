@@ -10,6 +10,12 @@
 </head>
 <body>
     <div class="container">
+        {% if message %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <span>{{ message }}</span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
         {% block main %}{% endblock %}
     </div>
 </body>
