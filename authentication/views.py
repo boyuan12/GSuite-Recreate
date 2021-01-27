@@ -56,9 +56,9 @@ def register(request):
 
 def step_two_phone(request):
     if request.method == "POST":
-        
+
         country_code = request.POST["country-code"]
-        phone = request.POST["phone"]
+        phone = request.POST["phone-number"]
         code = random_str()
 
 
