@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -6,12 +6,17 @@ from helpers import validate_password, random_str
 import os
 from twilio.rest import Client
 from .models import Profile
+from django.http import HttpRequest
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 
 c = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+BASE_URL = "127.0.0.1:8000"
 
 # Create your views here.
 def register(request):
@@ -91,9 +96,55 @@ def phone_verify(request):
 
 
 def login_view(request):
-    pass
+    if request.method == "POST":
+        print(request.POST)
+        if not request.POST.get("password"):
+            username = request.POST["username"]
+            try:
+                User.objects.get(username=username)
+                return render(request, "authentication/login.html", {
+                    "password": True,
+                    "username": username
+                })
+            except User.DoesNotExist:
+                return render(request, "authentication/login.html", {
+                    "message": "Username Invalid",
+                    "password": False
+                })
+
+        else:
+            user = authenticate(username=request.POST["username"], password=request.POST["password"])
+            if user == None:
+                return render(request, "authentication/login.html", {
+                    "password": False,
+                    "message": "Invalid credential, try again."
+                })
+            login(request, user)
+            return HttpResponse("logged in successfullY!")
+
+    else:
+        return render(request, "authentication/login.html", {
+            "password": False
+        })
 
 
 def logout_view(request):
     pass
+
+
+@csrf_exempt
+def api_check_username_exist(request: HttpRequest):
+    if request.method == "POST":
+        if request.get_host() != BASE_URL:
+            return JsonResponse({"success": False, "valid": None})
+
+        print("Log: ", request.body)
+        data = json.loads(request.body.decode("utf-8"))
+        username = data["username"]
+
+        try:
+            User.objects.get(username=username)
+            return JsonResponse({"success": True, "valid": True})
+        except User.DoesNotExist:
+            return JsonResponse({"success": True, "valid": False})
 

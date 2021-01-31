@@ -1,0 +1,52 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}
+    Create your own Doogle Account
+{% endblock %}
+
+{% block main %}
+    <h1>Login</h1>
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if password == False %}
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2" id="username" name="username">
+                <span class="input-group-text" id="basic-addon2">@mail.devwithme.xyz</span>
+            </div>
+            <button type="submit" class="btn btn-primary" id="login-1">Enter Password</button>
+        {% else %}
+            <div>
+                <input class="form-control" type="text" value="{{ username }}" name="username" readonly="readonly">
+            </div>
+            <div class="input-group mb-3">
+                <input type="password" class="form-control" placeholder="Password"  id="password" name="password">
+            </div>
+            <button type="submit" class="btn btn-primary" id="login-1">Login</button>
+        {% endif %}
+    </form>
+
+    <!-- <script>
+        document.getElementById("login-1").onclick = () => {
+            var username = document.getElementById("username").value;
+            fetch("/auth/api/username/", {
+                method: "POST",
+                data: JSON.stringify({"username": username}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data["success"] == false) {
+                    document.body.innerHTML = "<h1>Internal Error, please refresh the page and try again</h1>"
+                } else {
+                    document.getElementById("login-1").remove()
+                    document.getElementById("username").disabled = true
+                    var button = document.createElement("button")
+                    button.setAttribute("type", "submit")
+                    button.setAttribute("class", "btn btn-primary")
+                    button.innerText = "Login"
+                    document.getElementById("button").appendChild(button);
+                }
+            })
+        }
+    </script> -->
+{% endblock %}
