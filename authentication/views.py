@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from helpers import validate_password, random_str
 import os
 from twilio.rest import Client
-from .models import Profile
+from .models import Profile, AuthenticationRequest
 from django.http import HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -132,19 +132,29 @@ def logout_view(request):
     pass
 
 
+def sso(request):
+    pass
+
+
 @csrf_exempt
-def api_check_username_exist(request: HttpRequest):
-    if request.method == "POST":
-        if request.get_host() != BASE_URL:
-            return JsonResponse({"success": False, "valid": None})
+def request_authentication_request(request):
+    AuthenticationRequest().save()
+    auth_request = AuthenticationRequest.objects.filter()[::-1][0]
+    return JsonResponse({"authentication_token": auth_request.code})
 
-        print("Log: ", request.body)
-        data = json.loads(request.body.decode("utf-8"))
-        username = data["username"]
+# @csrf_exempt
+# def api_check_username_exist(request: HttpRequest):
+#     if request.method == "POST":
+#         if request.get_host() != BASE_URL:
+#             return JsonResponse({"success": False, "valid": None})
 
-        try:
-            User.objects.get(username=username)
-            return JsonResponse({"success": True, "valid": True})
-        except User.DoesNotExist:
-            return JsonResponse({"success": True, "valid": False})
+#         print("Log: ", request.body)
+#         data = json.loads(request.body.decode("utf-8"))
+#         username = data["username"]
+
+#         try:
+#             User.objects.get(username=username)
+#             return JsonResponse({"success": True, "valid": True})
+#         except User.DoesNotExist:
+#             return JsonResponse({"success": True, "valid": False})
 

@@ -40,6 +40,8 @@ def validate_password(password):
     return True
 
 
-def random_str(n=6):
+def random_str(n=6, alpha=False):
+    if alpha == True:
+        return "".join([random.choice(string.digits) + random.choice(string.ascii_letters) for i in range(n)])
     return "".join([random.choice(string.digits) for i in range(n)])
 
