@@ -1,0 +1,16 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}
+    Create your own Doogle Account
+{% endblock %}
+
+{% block main %}
+    <h1>Authentication to DMail</h1>
+    <button type="button" class="btn btn-primary" id="login">Login to Doogle</button>
+
+    <script>
+        document.getElementById("login").onclick = () => {
+            location.assign("/auth/redirect/")
+        }
+    </script>
+{% endblock %}
