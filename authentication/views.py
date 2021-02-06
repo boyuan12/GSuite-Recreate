@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from helpers import validate_password, random_str
 import os
 from twilio.rest import Client
-from .models import Profile, AuthenticationRequest
+from .models import Profile, RequestToken, AuthToken
 from django.http import HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -20,6 +20,7 @@ BASE_URL = "127.0.0.1:8000"
 
 # Create your views here.
 def register(request):
+    print(request.user.is_authenticated)
     if request.method == "POST":
         first_name = request.POST["first_name"]
         last_name = request.POST["last_name"]
@@ -138,9 +139,37 @@ def sso(request):
 
 @csrf_exempt
 def request_authentication_request(request):
-    AuthenticationRequest().save()
-    auth_request = AuthenticationRequest.objects.filter()[::-1][0]
+    RequestToken().save()
+    auth_request = RequestToken.objects.filter()[::-1][0]
     return JsonResponse({"authentication_token": auth_request.code})
+
+
+def authorization_request(request):
+    request_token = request.GET["request_token"]
+
+    try:
+        RequestToken.objects.filter(code=request_token)[0]
+    except RequestToken.DoesNotExist:
+        return JsonResponse({"error": "request token not valid"})
+
+    next = request.GET["next"]
+    if request.user.is_authenticated:
+        AuthToken(user=request.user.id).save()
+        auth_token = AuthToken.objects.filter(user=request.user.id)[::-1][0]
+        return redirect(f"{next}?request_token={request_token}&auth_token={auth_token.code}")
+
+
+@csrf_exempt
+def verify_auth_token(request):
+    auth_token = request.POST["auth_token"]
+
+    try:
+        at = AuthToken.objects.filter(code=auth_token)[0]
+        return JsonResponse({"user_id": at.user})
+    except AuthToken.DoesNotExist:
+        return JsonResponse({"error": "auth token is invalid"})
+
+
 
 # @csrf_exempt
 # def api_check_username_exist(request: HttpRequest):

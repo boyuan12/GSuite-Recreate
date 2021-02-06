@@ -9,5 +9,11 @@ class Profile(models.Model):
     phone = models.CharField(max_length=20)
 
 
-class AuthenticationRequest(models.Model):
-    code = models.CharField(max_length=30, default=random_str(30, alpha=True), unique=True)
+class RequestToken(models.Model):
+    code = models.CharField(max_length=30, default=random_str(30, alpha=True))
+
+
+class AuthToken(models.Model):
+    user = models.IntegerField()
+    code = models.CharField(max_length=30, default=random_str(30, alpha=True))
+

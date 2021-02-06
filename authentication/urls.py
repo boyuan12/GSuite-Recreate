@@ -8,4 +8,6 @@ urlpatterns = [
     # path("api/username/", views.api_check_username_exist),
     path("login/", views.login_view),
     path("sso/request_authentication_token/", views.request_authentication_request),
+    path("sso/authorization_request/", views.authorization_request),
+    path("sso/verify_auth_token/", views.verify_auth_token)
 ]
