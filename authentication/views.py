@@ -20,7 +20,7 @@ BASE_URL = "127.0.0.1:8000"
 
 # Create your views here.
 def register(request):
-    print(request.user.is_authenticated)
+    # print(request.user.is_authenticated)
     if request.method == "POST":
         first_name = request.POST["first_name"]
         last_name = request.POST["last_name"]
@@ -97,8 +97,14 @@ def phone_verify(request):
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return render(request, "authentication/login.html", {
+            "message": "You already logged in, please log out first.",
+            "password": False
+        })
+
     if request.method == "POST":
-        print(request.POST)
+
         if not request.POST.get("password"):
             username = request.POST["username"]
             try:
@@ -114,6 +120,8 @@ def login_view(request):
                 })
 
         else:
+            print(request.GET.get("next"))
+
             user = authenticate(username=request.POST["username"], password=request.POST["password"])
             if user == None:
                 return render(request, "authentication/login.html", {
@@ -121,7 +129,10 @@ def login_view(request):
                     "message": "Invalid credential, try again."
                 })
             login(request, user)
-            return HttpResponse("logged in successfullY!")
+
+            if not request.GET.get("next"):
+                return HttpResponse("logged in successfullY!")
+            return redirect(request.GET.get("next") + "&next=" +request.GET.get("next_2"))
 
     else:
         return render(request, "authentication/login.html", {
@@ -130,11 +141,10 @@ def login_view(request):
 
 
 def logout_view(request):
-    pass
-
-
-def sso(request):
-    pass
+    logout(request)
+    return render(request, "authentication/login.html", {
+        "password": False
+    })
 
 
 @csrf_exempt
@@ -146,6 +156,7 @@ def request_authentication_request(request):
 
 def authorization_request(request):
     request_token = request.GET["request_token"]
+    print("request token", request_token)
 
     try:
         RequestToken.objects.filter(code=request_token)[0]
@@ -153,10 +164,13 @@ def authorization_request(request):
         return JsonResponse({"error": "request token not valid"})
 
     next = request.GET["next"]
+
     if request.user.is_authenticated:
         AuthToken(user=request.user.id).save()
         auth_token = AuthToken.objects.filter(user=request.user.id)[::-1][0]
         return redirect(f"{next}?request_token={request_token}&auth_token={auth_token.code}")
+    else:
+        return redirect(f"/auth/login/?next=/auth/sso/authorization_request/?request_token={request_token}&next_2={next}")
 
 
 @csrf_exempt
