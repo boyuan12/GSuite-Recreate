@@ -1,7 +1,8 @@
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 import requests
 
-BASE_URL = "http://127.0.0.1:8001"
+BASE_URL = "http://127.0.0.1:8001/auth/sso/get_auth_token/"
 ACCOUNT_SERVER_URL = "http://127.0.0.1:8000"
 
 # Create your views here.
@@ -11,7 +12,15 @@ def register(request):
 
 def auth_redirect(request):
     authentication_token = requests.post(f"{ACCOUNT_SERVER_URL}/auth/sso/request_authentication_token/")
-    request.session["authentication_token"] = authentication_token.json()["authentication_token"]
+    request.session["request_token"] = authentication_token.json()["authentication_token"]
     print(authentication_token.json()["authentication_token"])
-    return redirect(f"{ACCOUNT_SERVER_URL}/auth/sso/?next={BASE_URL}")
+    return redirect(f"{ACCOUNT_SERVER_URL}/auth/sso/authorization_request/?next={BASE_URL}&request_token={authentication_token.json()['authentication_token']}")
 
+
+def get_auth_token(request):
+    auth_token = request.GET["auth_token"]
+    r = requests.post(f"{ACCOUNT_SERVER_URL}/auth/sso/verify_auth_token/", data={
+        "auth_token": auth_token
+    })
+
+    return JsonResponse(r.json())
