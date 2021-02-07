@@ -1,6 +1,8 @@
-from django.http.response import JsonResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 import requests
+from django.contrib.auth.models import User
+from django.contrib.auth import login
 
 BASE_URL = "http://127.0.0.1:8001/auth/sso/get_auth_token/"
 ACCOUNT_SERVER_URL = "http://127.0.0.1:8000"
@@ -23,4 +25,8 @@ def get_auth_token(request):
         "auth_token": auth_token
     })
 
-    return JsonResponse(r.json())
+    user = User.objects.get(id=r.json()["user_id"])
+
+    login(request, user)
+
+    return HttpResponse("You logged in!")
