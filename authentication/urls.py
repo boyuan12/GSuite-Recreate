@@ -11,4 +11,5 @@ urlpatterns = [
     path("sso/authorization_request/", views.authorization_request),
     path("sso/verify_auth_token/", views.verify_auth_token),
     path("logout/", views.logout_view),
+    path("forgot-password/", views.forgot_password_request)
 ]

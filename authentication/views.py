@@ -2,10 +2,10 @@ from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from helpers import validate_password, random_str
+from helpers import validate_password, random_str, send_mail
 import os
 from twilio.rest import Client
-from .models import Profile, RequestToken, AuthToken
+from .models import ForgotPasswordToken, Profile, RequestToken, AuthToken
 from django.http import HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -55,6 +55,7 @@ def register(request):
         request.session["password"] = password
         request.session["first_name"] = first_name
         request.session["last_name"] = last_name
+        request.session["query_string"] = request.GET.get("next") + "&next=" +request.GET.get("next_2")
 
         return redirect("/auth/register/phone/")
 
@@ -93,6 +94,8 @@ def phone_verify(request):
 
         Profile(user=user, phone=request.session.get("phone")).save()
 
+        if request.session.get("query_string") != None:
+            return redirect(request.session.get("query_string"))
         return HttpResponse("Welcome!")
 
 
@@ -184,6 +187,59 @@ def verify_auth_token(request):
         return JsonResponse({"error": "auth token is invalid"})
 
 
+
+def forgot_password_request(request):
+    logout(request)
+
+    if request.method == "POST":
+        info = request.POST["info"]
+
+        try:
+            user = User.objects.get(email=info)
+            ForgotPasswordToken(user=user.id).save()
+            code = ForgotPasswordToken.objects.filter(user=user.id)[::-1][0].code
+            send_mail(info, "Reset Your Password", f"Click this <a href='{BASE_URL}/auth/reset/{code}/'>link</a> to reset your password")
+        except User.DoesNotExist:
+            try:
+                p = Profile.objects.get(phone=info)
+                ForgotPasswordToken(user=p.user.id).save()
+                code = ForgotPasswordToken.objects.filter(user=p.user.id)[::-1][0].code
+                c.messages.create(from_='+19162800623', body=f"Password reset: {BASE_URL}/auth/reset/{code}/")
+            except Profile.DoesNotExist:
+                return render(request, "authentication/forgot-password.html", {
+                    "message": "Email/Phone is not valid"
+                })
+
+    else:
+        return render(request, "authentication/forgot-password.html")
+
+
+def password_reset(request, code):
+    logout(request)
+    try:
+        ForgotPasswordToken.objects.get(code=code)
+    except ForgotPasswordToken.DoesNotExist:
+        return render(request, "authentication/reset-password.html", {
+            "message": "Code doesn't exist"
+        })
+
+    if request.method == "POST":
+        user_id = ForgotPasswordToken.objects.get(code=code).user
+        if request.POST["password"] != request.POST["confirmation"]:
+            return render(request, "authentication/reset-password.html", {
+                "message": "Confirm password doesn't match password"
+            })
+
+        if not validate_password(request.POST["password"]):
+            return render(request, "authentication/reset-password.html", {
+                "message": "Password didn't pass validation"
+            })
+
+        User.objects.get(id=user_id).set_password(request.POST["password"]).save()
+
+        return redirect("/auth/login/")
+    else:
+        return render(request, "authentication/reset-password.html")
 
 # @csrf_exempt
 # def api_check_username_exist(request: HttpRequest):

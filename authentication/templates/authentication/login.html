@@ -49,4 +49,11 @@
             })
         }
     </script> -->
+
+    <a id="register-link">Need an account? Register</a>, Or <br>
+    <a href="/auth/forgot-password/">Forgot Password?</a>
+
+    <script>
+      document.getElementById("register-link").setAttribute("href", "/auth/register/" + location.search)
+    </script>
 {% endblock %}

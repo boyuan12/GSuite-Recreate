@@ -17,3 +17,7 @@ class AuthToken(models.Model):
     user = models.IntegerField()
     code = models.CharField(max_length=30, default=random_str(30, alpha=True))
 
+
+class ForgotPasswordToken(models.Model):
+    user = models.IntegerField()
+    code = models.CharField(max_length=7, default=random_str(7))
