@@ -29,4 +29,5 @@ def get_auth_token(request):
 
     login(request, user)
 
-    return HttpResponse("You logged in!")
+    return redirect("/")
+
