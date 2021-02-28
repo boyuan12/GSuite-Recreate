@@ -37,5 +37,3 @@ def send_mail(from_email, receiver, subject, message):
     s.sendmail(me, you, msg.as_string())
     s.quit()
 
-# send_mail("devwithme@devwithme.xyz", "Not Important Update", "<h1>Hope this still get inserted to the database though!</h1>")
-

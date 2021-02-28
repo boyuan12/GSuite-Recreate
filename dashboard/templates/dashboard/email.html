@@ -1,0 +1,15 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}
+    Send an Email
+{% endblock %}
+
+{% block main %}
+    <h1>DMail Dashboard</h1>
+    <h2>{{ email.subject }}</h2>
+    <h2>{{ email.from_email }}</h2>
+
+    <div>
+        <iframe srcdoc="{{ email.body }}" width="100%" height="100%" style="position: absolute; height: 100%; border: none"></iframe>
+    </div>
+{% endblock %}

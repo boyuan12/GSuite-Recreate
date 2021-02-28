@@ -5,13 +5,68 @@
 {% endblock %}
 
 {% block main %}
-    <h1>DMail Dashboard</h1>
-    {% for email in emails %}
-        <ul>
-            <li>From: {{ email.from_email }}</li>
-            <li>To: {{ email.to_email }}</li>
-            <li>Subject: {{ email.subject }}</li>
-            <li>Body: {{ email.body|safe }}</li>
-        </ul>
-    {% endfor %}
+    <h1 style="text-align: center;">DMail Dashboard</h1>
+    <div class="container">
+
+        <div class="row">
+            <div class="col-3">
+                Category and Folder
+            </div>
+            <div class="col-9" id="display">
+            <table class="table">
+                <!-- <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                  </tr>
+                </thead> -->
+                <tbody>
+                    {% for email in emails %}
+                        <tr onclick="location.assign('/email/{{ email.3 }}/')">
+                            <th scope="row">{{ email.4 }}</th>
+                            <td colspan="2">{{ email.2 }}</td>
+                            <td class="timestamp">{{ email.3 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        var timestamps = document.getElementsByClassName("timestamp");
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        for (let i=0; i<timestamps.length; i++) {
+            var d = new Date(parseInt(timestamps[i].innerHTML));
+            var curr = new Date();
+
+            if (curr.getUTCDay() == d.getUTCDay()) {
+                timestamps[i].innerHTML = d.toLocaleTimeString();
+            } else if (curr.getUTCFullYear == d.getUTCFullYear) {
+                timestamps[i].innerHTML = months[d.getMonth()] + ' ' + d.getDate()
+            } else {
+                timestamps[i].innerHTML = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+            }
+        }
+
+        // const displayEmail = (email, second) => {
+        //     fetch("/api/get-email", {
+        //         method: 'POST',
+        //         body: {
+        //             from_email: email,
+        //             second: second
+        //         }
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         document.getElementById("display")
+        //     })
+        // }
+    </script>
 {% endblock %}
