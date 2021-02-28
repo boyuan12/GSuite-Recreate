@@ -46,7 +46,7 @@
             var d = new Date(parseInt(timestamps[i].innerHTML));
             var curr = new Date();
 
-            if (curr.getUTCDay() == d.getUTCDay()) {
+            if (curr.getUTCDate() == d.getUTCDate()) {
                 timestamps[i].innerHTML = d.toLocaleTimeString();
             } else if (curr.getUTCFullYear == d.getUTCFullYear) {
                 timestamps[i].innerHTML = months[d.getMonth()] + ' ' + d.getDate()
