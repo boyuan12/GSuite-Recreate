@@ -1,4 +1,4 @@
-{% extends "authentication/base.html" %}
+{% extends "dashboard/base.html" %}
 
 {% block title %}
     Create your own Doogle Account
@@ -9,8 +9,17 @@
     <div class="container">
 
         <div class="row">
+
             <div class="col-3">
-                Category and Folder
+                <button style="border-radius: 12px" class="btn btn-primary" onclick="location.assign('/send')">
+                    <span class="material-icons md-48">
+                        add_circle
+                    </span>
+                    <span>Compose</span>
+                </button>
+                <div>
+                    Category and Folder
+                </div>
             </div>
             <div class="col-9" id="display">
             <table class="table">

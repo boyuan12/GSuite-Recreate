@@ -1,4 +1,4 @@
-{% extends "authentication/base.html" %}
+{% extends "dashboard/base.html" %}
 
 {% block title %}
     Send an Email
@@ -6,10 +6,21 @@
 
 {% block main %}
     <h1>DMail Dashboard</h1>
-    <h2>{{ email.subject }}</h2>
-    <h2>{{ email.from_email }}</h2>
 
-    <div>
-        <iframe srcdoc="{{ email.body }}" width="100%" height="100%" style="position: absolute; height: 100%; border: none"></iframe>
+    <div class="row">
+        <div class="col-3">
+            Category and Folder
+        </div>
+        <div class="col-9">
+            <span class="material-icons md-48" onclick="location.assign('/')">
+                chevron_left
+            </span> <br>
+            <b>Subject: {{ email.subject }}</b> <br>
+            <b>Sender: {{ email.from_email }}</b>
+            <div>
+                <iframe srcdoc="{{ email.body }}" width="100%" height="100%" style="position: absolute; height: 100%; border: none"></iframe>
+            </div>
+        </div>
     </div>
+
 {% endblock %}

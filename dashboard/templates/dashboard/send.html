@@ -9,8 +9,11 @@
     <h2>Send an email</h2>
     <form method="POST">
         {% csrf_token %}
+        <div>
+            <ul id="emails"></ul>
+        </div>
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="receiver">
+            <input type="email" class="form-control" id="sent" placeholder="name@example.com" name="receiver">
             <label for="floatingInput">Email to sent</label>
         </div>
         <div class="form-floating mb-3">
@@ -24,4 +27,18 @@
         <br>
         <button class="btn btn-primary">Submit</button>
     </form>
+
+    <script>
+        document.getElementById("sent").onkeyup = () => {
+            console.log("onchange in sent detected!")
+            if (document.getElementById("sent").value.includes(",")) {
+                var email = document.getElementById("sent").value.split(",")
+                var li = document.createElement("LI");
+                li.innerText = email[0]
+                li.setAttribute("onclick", "this.remove()")
+                document.getElementById("emails").appendChild(li);
+                document.getElementById("sent").value = email[1]
+            }
+        }
+    </script>
 {% endblock %}
